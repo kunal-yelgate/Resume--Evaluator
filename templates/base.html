@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <title>A_Resume_Analyzer</title>
+</head>
+<body>
+    <header>
+        <div class="container">
+           <nav>
+            <a href="/Dashboard">Dashboard</a>
+            <a href="/history">History</a>
+            <a href="/logout">Logout</a>
+           </nav>
+        </div>
+    </header>
+
+    <main class="container">
+            {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2026 A_Resume_Analyzer. All rights reserved.</p>
+    </footer>
+</body>
+</html>
