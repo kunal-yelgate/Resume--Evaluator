@@ -1,18 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-     <h2>Welcome, {{ user.name }}!</h2>
+    <h2>Welcome, {{ user }}!</h2>
     
     <div class="card">
         <h3>Resume Analysis</h3>
-        <!-- Analysis results will go here -->
-
-        <form method="POST" enctype="multipart/form-data">
-            <!-- Form fields will go here -->
+        <form method="POST" enctype="multipart/form-data" action="{{ url_for('dashboard') }}">
              <textarea name="resume_text" placeholder="Paste your resume text here..."></textarea>
              <p>OR upload a file:</p>
-            <input type="file" name="resume_file" accept=".pdf,.doc,.docx">
-            <input type="text" name="file">
-            <input type="text" name="desired_role" placeholder="What do you Want to become? (e.g Full-Stack Dev, Backend Dev, Data Engineer)">
+            <input type="file" name="resume" accept=".pdf,.doc,.docx">
+            <input type="text" name="role" placeholder="What do you want to become? (e.g. Full-Stack Dev, Backend Dev, Data Engineer)">
             
             <button type="submit">Analyze Resume</button>
         </form>
@@ -52,7 +48,6 @@
             {% endfor %}
             </ul>
         </div>
-        
-
+    {% endif %}
 
 {% endblock %}

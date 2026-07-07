@@ -2,20 +2,16 @@
 {% block content %}
     <div class="auth-container">
         <div class="auth-card">
-             <h2>>Welcome back!</h2>
-                <p class="sub-text"></p>Please login to your account.</p>
-                <form method="POST">
-                  
-                    <!-- Form fields will go here -->
+                 <h2>Welcome back!</h2>
+                     <p class="sub-text">Please login to your account.</p>
+                     <form method="POST" action="{{ url_for('login') }}">
                     <input type="email" name="email" placeholder="Enter your Email" required>
                     <input type="password" name="password" placeholder="Enter your Password" required>
                     <button type="submit">Login</button>
-
-                    <p class="sub-text">Don't have an account? <a href="/signup">Sign up here</a></p>
                 </form>
 
                 <div class="auth-link">
-                    <a href="/forgot-password">Forgot Password?</a>
+                    <a href="{{ url_for('forgot_password') }}">Forgot Password?</a>
                 </div>
 
                 <p class="switch-auth">
