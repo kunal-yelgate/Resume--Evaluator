@@ -1,4 +1,7 @@
-from flask import Flask, render_template, request, redirect, session
+import os
+
+from dotenv import load_dotenv
+from flask import Flask, render_template, request, redirect, session, url_for
 from db import engine, Base, SessionLocal
 import models
 import json
@@ -6,8 +9,10 @@ import PyPDF2
 
 from ai import analyze_resume
 
+load_dotenv(override=True)
+
 app = Flask(__name__)
-app.secret_key = "open123"
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "open123")
 
 Base.metadata.create_all(bind=engine)
 
@@ -42,7 +47,7 @@ def extract_resume_text(uploaded_file):
 @app.route("/")
 def home():
     if "user" in session:
-        return redirect("/dashboard")
+        return redirect(url_for("dashboard"))
     return render_template("login.html")
 
 
@@ -62,7 +67,7 @@ def signup():
         db.add(user)
         db.commit()
 
-        return redirect("/login")
+        return redirect(url_for("login"))
 
     return render_template("signup.html")
 
@@ -80,7 +85,7 @@ def login():
         if user:
             session["user"] = user.email
             session["user_id"] = user.id
-            return redirect("/dashboard")
+            return redirect(url_for("dashboard"))
 
         return "Invalid credentials"
 
@@ -90,16 +95,18 @@ def login():
 @app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
     if "user" not in session:
-        return redirect("/login")
+        return redirect(url_for("login"))
 
     result = None
     resume_text = None
     user_goal = None
 
     if request.method == "POST":
-        user_goal = request.form.get("role")
-        resume_file = request.files.get("resume") or request.files.get("file")
-        resume_text = extract_resume_text(resume_file)
+        user_goal = request.form.get("role") or request.form.get("desired_role")
+        resume_text = request.form.get("resume_text")
+        resume_file = request.files.get("resume") or request.files.get("resume_file") or request.files.get("file")
+        if not resume_text:
+            resume_text = extract_resume_text(resume_file)
 
         if resume_text and user_goal:
             try:
@@ -132,7 +139,7 @@ def dashboard():
 @app.route("/history")
 def history():
     if "user" not in session:
-        return redirect("/login")
+        return redirect(url_for("login"))
 
     db = SessionLocal()
     user = db.query(models.user).filter_by(email=session["user"]).first()
@@ -157,11 +164,25 @@ def history():
     return render_template("history.html", reports=reports_data)
 
 
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    message = None
+
+    if request.method == "POST":
+        email = request.form.get("email")
+        if email:
+            message = "If the account exists, password reset instructions would be sent to that email."
+        else:
+            message = "Please enter your email address."
+
+    return render_template("forgot_password.html", message=message)
+
+
 @app.route("/logout")
 def logout():
     session.pop("user", None)
     session.pop("user_id", None)
-    return redirect("/login")
+    return redirect(url_for("login"))
 
 
 if __name__ == "__main__":
