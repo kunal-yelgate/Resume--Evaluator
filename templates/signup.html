@@ -4,8 +4,7 @@
     <div class="auth-container">
         <h2>Create Account</h2>
         <p class="sub-text">Start your journey with us today!</p>
-        <form method="POST">
-            <!-- Form fields will go here -->
+        <form method="POST" action="{{ url_for('signup') }}">
              <input type="email" name="email" placeholder="Enter your Email" required>
              <input type="password" name="password" placeholder="Enter your Password" required>
              <p class="sub-text">The password must be at least 6 characters long.</p>
