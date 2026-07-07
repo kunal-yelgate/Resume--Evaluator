@@ -1,16 +1,20 @@
+import os
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-DATABASE_URL = "mysql+pymysql://3QUwFTxJispgn9h.root:CDLzjn9DYtFHzLsl@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/test?ssl=true"
+load_dotenv(override=True)
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError("Missing DATABASE_URL. Set it in your .env file or environment.")
 
 engine = create_engine(
     DATABASE_URL,
     pool_pre_ping=True,
-    connect_args={
-        "ssl": {
-              "ssl":True
-            }
-    }
+    connect_args={"ssl": {"ssl": True}},
 )
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
