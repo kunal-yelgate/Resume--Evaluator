@@ -2,7 +2,7 @@ import json
 import os
 
 from dotenv import load_dotenv
-from openai import APIConnectionError, AuthenticationError, BadRequestError, OpenAI, RateLimitError
+from groq import APIConnectionError, AuthenticationError, BadRequestError, Groq, RateLimitError
 
 
 load_dotenv(override=True)
@@ -18,19 +18,19 @@ def _mask_api_key(api_key):
     return f"{api_key[:8]}************"
 
 
-def _create_openai_client():
-    api_key = os.getenv("OPENAI_API_KEY")
+def _create_groq_client():
+    api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
-        raise ValueError("OPENAI_API_KEY is missing.")
+        raise ValueError("GROQ_API_KEY is missing.")
 
-    if os.getenv("DEBUG_OPENAI_KEY") == "1":
-        print(f"Using OpenAI key: {_mask_api_key(api_key)}")
+    if os.getenv("DEBUG_GROQ_KEY") == "1":
+        print(f"Using Groq key: {_mask_api_key(api_key)}")
 
-    return OpenAI(api_key=api_key)
+    return Groq(api_key=api_key)
 
 
 def analyze_resume(resume_text, user_goal):
-    client = _create_openai_client()
+    client = _create_groq_client()
 
     prompt = f"""You are a senior software engineer and high-level interviewer.
 Evaluate the following resume text based on the user's goal.
@@ -50,25 +50,27 @@ Resume:
 """
 
     try:
-        response = client.responses.create(
-            model="gpt-4.1-mini",
-            input=[
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
                 {
                     "role": "system",
                     "content": "You are a strict hiring assistant that returns valid JSON only.",
                 },
                 {"role": "user", "content": prompt},
             ],
+            response_format={"type": "json_object"},
         )
 
-        content = response.output_text.strip()
+        content = response.choices[0].message.content.strip()
         start = content.find("{")
         end = content.rfind("}") + 1
         parsed = json.loads(content[start:end])
 
         return {
             "skills": parsed.get("skills", []),
-            "missing_skills": parsed.get("missing_skills", []),
+            "missing_skills": parsed.get("missing_skills", []) or parsed.get("skills_not_found", []),
+            "skills_not_found": parsed.get("skills_not_found", []) or parsed.get("missing_skills", []),
             "roadmap": parsed.get("roadmap", []),
             "interview_questions": parsed.get("interview_questions", []),
         }
@@ -79,7 +81,7 @@ Resume:
             "missing_skills": [],
             "roadmap": [],
             "interview_questions": [],
-            "error": "OpenAI authentication failed. Check OPENAI_API_KEY.",
+            "error": "Groq authentication failed. Check GROQ_API_KEY.",
         }
 
     except APIConnectionError:
@@ -88,7 +90,7 @@ Resume:
             "missing_skills": [],
             "roadmap": [],
             "interview_questions": [],
-            "error": "Unable to connect to the OpenAI API.",
+            "error": "Unable to connect to the Groq API.",
         }
 
     except RateLimitError as e:
@@ -97,7 +99,7 @@ Resume:
             "missing_skills": [],
             "roadmap": [],
             "interview_questions": [],
-            "error": f"OpenAI quota exceeded or rate limit reached: {str(e)}",
+            "error": f"Groq quota exceeded or rate limit reached: {str(e)}",
         }
 
     except BadRequestError as e:
@@ -106,7 +108,7 @@ Resume:
             "missing_skills": [],
             "roadmap": [],
             "interview_questions": [],
-            "error": f"OpenAI request was invalid: {str(e)}",
+            "error": f"Groq request was invalid: {str(e)}",
         }
 
     except Exception as e:
