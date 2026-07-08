@@ -16,14 +16,12 @@
         <div class="form-group">
             <label for="desired_role">🎯 Target Role</label>
             <input type="text" id="desired_role" name="desired_role"
-                placeholder="e.g. Senior Python Backend Developer, Data Scientist..."
-                required>
+                placeholder="e.g. Senior Python Backend Developer, Data Scientist..." required>
         </div>
 
         <div class="form-group">
             <label for="resume_text">📄 Paste Resume Text</label>
-            <textarea id="resume_text" name="resume_text"
-                placeholder="Paste your full resume text here..."></textarea>
+            <textarea id="resume_text" name="resume_text" placeholder="Paste your full resume text here..."></textarea>
         </div>
 
         <div class="divider-row">
@@ -43,76 +41,76 @@
 </div>
 
 {% if result %}
-    {% if result.error %}
-        <div class="result-card result-card--error">
-            <h3>⚠️ Error</h3>
-            <p>{{ result.error }}</p>
-        </div>
-    {% else %}
-        <div class="results-grid">
+{% if result.error %}
+<div class="result-card result-card--error">
+    <h3>Error</h3>
+    <p>{{ result.error }}</p>
+</div>
+{% else %}
+<div class="results-grid">
 
-            <div class="result-card result-card--skills">
-                <h3>✅ Your Skills</h3>
-                {% if result.skills %}
-                    <ul>
-                    {% for skill in result.skills %}
-                        <li><span class="badge badge--green">{{ skill }}</span></li>
-                    {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="empty-state">No skills detected.</p>
-                {% endif %}
-            </div>
+    <div class="result-card result-card--skills">
+        <h3>Your Skills</h3>
+        {% if result.skills %}
+        <ul>
+            {% for skill in result.skills %}
+            <li><span class="badge badge--green">{{ skill }}</span></li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty-state">No skills detected.</p>
+        {% endif %}
+    </div>
 
-            <div class="result-card result-card--missing">
-                <h3>❌ Missing Skills</h3>
-                {% if result.missing_skills or result.skills_not_found %}
-                    <ul>
-                    {% for skill in (result.missing_skills or result.skills_not_found) %}
-                        <li><span class="badge badge--red">{{ skill }}</span></li>
-                    {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="empty-state">You have all key skills! 🎉</p>
-                {% endif %}
-            </div>
+    <div class="result-card result-card--missing">
+        <h3>Missing Skills</h3>
+        {% if result.missing_skills or result.skills_not_found %}
+        <ul>
+            {% for skill in (result.missing_skills or result.skills_not_found) %}
+            <li><span class="badge badge--red">{{ skill }}</span></li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty-state">You have all key skills! 🎉</p>
+        {% endif %}
+    </div>
 
-            <div class="result-card result-card--roadmap">
-                <h3>🗺️ Learning Roadmap</h3>
-                {% if result.roadmap %}
-                    <ol>
-                    {% for step in result.roadmap %}
-                        <li>{{ step }}</li>
-                    {% endfor %}
-                    </ol>
-                {% else %}
-                    <p class="empty-state">No roadmap generated.</p>
-                {% endif %}
-            </div>
+    <div class="result-card result-card--roadmap">
+        <h3>Learning Roadmap</h3>
+        {% if result.roadmap %}
+        <ol>
+            {% for step in result.roadmap %}
+            <li>{{ step }}</li>
+            {% endfor %}
+        </ol>
+        {% else %}
+        <p class="empty-state">No roadmap generated.</p>
+        {% endif %}
+    </div>
 
-            <div class="result-card result-card--questions">
-                <h3>🎤 Interview Questions</h3>
-                {% if result.interview_questions %}
-                    <ol>
-                    {% for q in result.interview_questions %}
-                        <li>{{ q }}</li>
-                    {% endfor %}
-                    </ol>
-                {% else %}
-                    <p class="empty-state">No questions generated.</p>
-                {% endif %}
-            </div>
+    <div class="result-card result-card--questions">
+        <h3> Interview Questions</h3>
+        {% if result.interview_questions %}
+        <ol>
+            {% for q in result.interview_questions %}
+            <li>{{ q }}</li>
+            {% endfor %}
+        </ol>
+        {% else %}
+        <p class="empty-state">No questions generated.</p>
+        {% endif %}
+    </div>
 
-        </div>
+</div>
 
-        <div class="history-cta">
-            <a href="{{ url_for('history') }}" class="btn-secondary">📋 View All Past Analyses</a>
-        </div>
-    {% endif %}
+<div class="history-cta">
+    <a href="{{ url_for('history') }}" class="btn-secondary"> View All Past Analyses</a>
+</div>
+{% endif %}
 {% endif %}
 
 <script>
-    document.getElementById('analyze-form').addEventListener('submit', function() {
+    document.getElementById('analyze-form').addEventListener('submit', function () {
         const btn = document.getElementById('analyze-btn');
         btn.querySelector('.btn-text').style.display = 'none';
         btn.querySelector('.btn-loading').style.display = 'inline';
