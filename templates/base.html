@@ -3,31 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered resume analyzer. Get instant feedback on your skills, missing gaps, roadmap, and interview questions.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>A_Resume_Analyzer</title>
+    <title>{% block title %}ResumeAI — Smart Resume Analyzer{% endblock %}</title>
 </head>
 <body>
     <header>
         <div class="container">
-           <nav>
-            {% if session.get('user') %}
-                <a href="{{ url_for('dashboard') }}">Dashboard</a>
-                <a href="{{ url_for('history') }}">History</a>
-                <a href="{{ url_for('logout') }}">Logout</a>
-            {% else %}
-                <a href="{{ url_for('login') }}">Login</a>
-                <a href="{{ url_for('signup') }}">Sign Up</a>
-            {% endif %}
-           </nav>
+            <nav>
+                <a href="{{ url_for('home') }}" class="nav-brand">⚡ ResumeAI</a>
+                <div class="nav-links">
+                {% if session.get('user') %}
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('history') }}">History</a>
+                    <a href="{{ url_for('logout') }}" class="btn-nav-logout">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Login</a>
+                    <a href="{{ url_for('signup') }}" class="btn-nav-signup">Sign Up</a>
+                {% endif %}
+                </div>
+            </nav>
         </div>
     </header>
 
     <main class="container">
-            {% block content %}{% endblock %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash flash--{{ category }}">
+                        <span class="flash-icon">{% if category == 'error' %}⚠️{% else %}✅{% endif %}</span>
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
     </main>
 
     <footer>
-        <p>&copy; 2026 A_Resume_Analyzer. All rights reserved.</p>
+        <p>&copy; 2026 ResumeAI. Built with Groq AI &amp; Llama 3.3.</p>
     </footer>
+
+    <script>
+        // Auto-dismiss flash messages after 5 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.flash').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-8px)';
+                setTimeout(() => el.remove(), 300);
+            });
+        }, 5000);
+    </script>
 </body>
 </html>

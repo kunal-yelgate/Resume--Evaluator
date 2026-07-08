@@ -1,41 +1,73 @@
 {% extends "base.html" %}
+{% block title %}History — ResumeAI{% endblock %}
 {% block content %}
-    <h2>Your Analysis History</h2>
-    {% for r in reports %}
-        <div class="card">
-            <p><strong>Resume Preview:</strong></p>
-            <p>{{ r.resume[:100] }}...</p>
-            
-            <hr>
 
-            <h3>Skills</h3>
-            <ul>
-            {% for skill in r.result.get("skills", []) %}
-                <li>{{ skill }}</li>
-            {% endfor %}
-            </ul>
+<div class="dashboard-header">
+    <h1>📋 Analysis History</h1>
+    <p class="sub-text">All your past resume analyses, newest first.</p>
+</div>
 
-            <h3>Skills Not Found</h3>
+{% if reports %}
+{% for r in reports %}
+<div class="card history-card">
+    <div class="history-preview">
+        <strong>Resume Preview:</strong>
+        <p>{{ r.resume[:200] }}{% if r.resume|length > 200 %}...{% endif %}</p>
+    </div>
+    <hr>
+    <div class="results-grid results-grid--compact">
+        <div class="result-card result-card--skills">
+            <h3>✅ Skills</h3>
             <ul>
-            {% for skill in r.result.get("skills_not_found", []) %}
-                <li>{{ skill }}</li>
-            {% endfor %}
-            </ul>
-
-            <h3>Roadmap</h3>
-            <ul>
-            {% for item in r.result.get("roadmap", []) %}
-                <li>{{ item }}</li>
-            {% endfor %}
-            </ul>
-
-            <h3>Interview Questions</h3>
-            <ul>
-            {% for question in r.result.get("interview_questions", []) %}
-                <li>{{ question }}</li>
-            {% endfor %}
+                {% for skill in r.result.get("skills", []) %}
+                <li><span class="badge badge--green">{{ skill }}</span></li>
+                {% else %}
+                <li class="empty-state">None recorded.</li>
+                {% endfor %}
             </ul>
         </div>
-    {% endfor %}
 
+        <div class="result-card result-card--missing">
+            <h3>❌ Missing Skills</h3>
+            <ul>
+                {% for skill in (r.result.get("missing_skills") or r.result.get("skills_not_found", [])) %}
+                <li><span class="badge badge--red">{{ skill }}</span></li>
+                {% else %}
+                <li class="empty-state">None recorded.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="result-card result-card--roadmap">
+            <h3>🗺️ Roadmap</h3>
+            <ol>
+                {% for item in r.result.get("roadmap", []) %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li class="empty-state">None recorded.</li>
+                {% endfor %}
+            </ol>
+        </div>
+
+        <div class="result-card result-card--questions">
+            <h3>🎤 Interview Qs</h3>
+            <ol>
+                {% for q in r.result.get("interview_questions", []) %}
+                <li>{{ q }}</li>
+                {% else %}
+                <li class="empty-state">None recorded.</li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="empty-history">
+    <div class="empty-history-icon">📄</div>
+    <h2>No analyses yet</h2>
+    <p>Head to the dashboard to analyze your first resume!</p>
+    <a href="{{ url_for('dashboard') }}" class="btn-primary">Go to Dashboard →</a>
+</div>
+{% endif %}
 {% endblock %}
