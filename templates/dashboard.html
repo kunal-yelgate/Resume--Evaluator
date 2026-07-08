@@ -1,58 +1,122 @@
 {% extends "base.html" %}
+{% block title %}Dashboard — ResumeAI{% endblock %}
 {% block content %}
-     <h2>Welcome, {{ user.name }}!</h2>
-    
-    <div class="card">
-        <h3>Resume Analysis</h3>
-        <!-- Analysis results will go here -->
 
-        <form method="POST" enctype="multipart/form-data">
-            <!-- Form fields will go here -->
-             <textarea name="resume_text" placeholder="Paste your resume text here..."></textarea>
-             <p>OR upload a file:</p>
-            <input type="file" name="resume_file" accept=".pdf,.doc,.docx">
-            <input type="text" name="file">
-            <input type="text" name="desired_role" placeholder="What do you Want to become? (e.g Full-Stack Dev, Backend Dev, Data Engineer)">
-            
-            <button type="submit">Analyze Resume</button>
-        </form>
-    </div>
+<div class="dashboard-header">
+    <h1>Dashboard</h1>
+    <p class="sub-text">Logged in as <strong>{{ user }}</strong></p>
+</div>
 
-    {% if result %}
-        <div class="red">
-            {%if result.error %}
-             <p style="color: red;">{{ result.error }}</p>
-            {% endif %}
+<div class="card">
+    <h2>🔍 Analyze Your Resume</h2>
+    <p class="sub-text">Paste your resume below or upload a file, then tell us your target role.</p>
 
-            <h3>Skills</h3>
-            <ul>
-            {% for skill in result.get("skills", []) %}
-                <li>{{ skill }}</li>
-            {% endfor %}
-            </ul>
+    <form method="POST" action="{{ url_for('dashboard') }}" enctype="multipart/form-data" id="analyze-form">
 
-            <h3>Skills Not Found</h3>
-            <ul>
-            {% for skill in result.get("skills_not_found", []) %}
-                <li>{{ skill }}</li>
-            {% endfor %}
-            </ul>
-
-            <h3>Roadmap</h3>
-            <ul>
-            {% for item in result.get("roadmap", []) %}
-                <li>{{ item }}</li>
-            {% endfor %}
-            </ul>
-
-            <h3>Interview Questions</h3>
-            <ul>
-            {% for question in result.get("interview_questions", []) %}
-                <li>{{ question }}</li>
-            {% endfor %}
-            </ul>
+        <div class="form-group">
+            <label for="desired_role">🎯 Target Role</label>
+            <input type="text" id="desired_role" name="desired_role"
+                placeholder="e.g. Senior Python Backend Developer, Data Scientist..."
+                required>
         </div>
-        
 
+        <div class="form-group">
+            <label for="resume_text">📄 Paste Resume Text</label>
+            <textarea id="resume_text" name="resume_text"
+                placeholder="Paste your full resume text here..."></textarea>
+        </div>
 
+        <div class="divider-row">
+            <span>— or upload a file —</span>
+        </div>
+
+        <div class="form-group">
+            <label for="resume_file">📎 Upload PDF or DOCX</label>
+            <input type="file" id="resume_file" name="resume_file" accept=".pdf,.docx">
+        </div>
+
+        <button type="submit" class="btn-primary" id="analyze-btn">
+            <span class="btn-text">⚡ Analyze Resume</span>
+            <span class="btn-loading" style="display:none;">Analyzing...</span>
+        </button>
+    </form>
+</div>
+
+{% if result %}
+    {% if result.error %}
+        <div class="result-card result-card--error">
+            <h3>⚠️ Error</h3>
+            <p>{{ result.error }}</p>
+        </div>
+    {% else %}
+        <div class="results-grid">
+
+            <div class="result-card result-card--skills">
+                <h3>✅ Your Skills</h3>
+                {% if result.skills %}
+                    <ul>
+                    {% for skill in result.skills %}
+                        <li><span class="badge badge--green">{{ skill }}</span></li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="empty-state">No skills detected.</p>
+                {% endif %}
+            </div>
+
+            <div class="result-card result-card--missing">
+                <h3>❌ Missing Skills</h3>
+                {% if result.missing_skills or result.skills_not_found %}
+                    <ul>
+                    {% for skill in (result.missing_skills or result.skills_not_found) %}
+                        <li><span class="badge badge--red">{{ skill }}</span></li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="empty-state">You have all key skills! 🎉</p>
+                {% endif %}
+            </div>
+
+            <div class="result-card result-card--roadmap">
+                <h3>🗺️ Learning Roadmap</h3>
+                {% if result.roadmap %}
+                    <ol>
+                    {% for step in result.roadmap %}
+                        <li>{{ step }}</li>
+                    {% endfor %}
+                    </ol>
+                {% else %}
+                    <p class="empty-state">No roadmap generated.</p>
+                {% endif %}
+            </div>
+
+            <div class="result-card result-card--questions">
+                <h3>🎤 Interview Questions</h3>
+                {% if result.interview_questions %}
+                    <ol>
+                    {% for q in result.interview_questions %}
+                        <li>{{ q }}</li>
+                    {% endfor %}
+                    </ol>
+                {% else %}
+                    <p class="empty-state">No questions generated.</p>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <div class="history-cta">
+            <a href="{{ url_for('history') }}" class="btn-secondary">📋 View All Past Analyses</a>
+        </div>
+    {% endif %}
+{% endif %}
+
+<script>
+    document.getElementById('analyze-form').addEventListener('submit', function() {
+        const btn = document.getElementById('analyze-btn');
+        btn.querySelector('.btn-text').style.display = 'none';
+        btn.querySelector('.btn-loading').style.display = 'inline';
+        btn.disabled = true;
+    });
+</script>
 {% endblock %}
