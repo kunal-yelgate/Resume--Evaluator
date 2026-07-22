@@ -1,12 +1,38 @@
 # ⚡ ResumeAI — Smart Resume Analyzer
 
-An AI-powered resume evaluation platform that analyzes resumes, identifies skills, detects career gaps, generates personalized learning roadmaps, and prepares interview questions based on the target role.
+An AI-powered resume evaluation platform that analyzes resumes, identifies skills, detects career gaps, generates personalized learning roadmaps, and prepares interview questions based on a target role.
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Flask](https://img.shields.io/badge/Flask-2.0%2B-green)
 ![MySQL](https://img.shields.io/badge/MySQL-Database-orange)
 ![AI](https://img.shields.io/badge/AI-Groq%20LLaMA%203.3-purple)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
+![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen)
+
+---
+
+## 📖 Table of Contents
+
+- [Features](#-features)
+- [Tech Stack](#️-tech-stack)
+- [Demo / Screenshots](#-demo--screenshots)
+- [Prerequisites](#-prerequisites)
+- [Installation](#️-installation-guide)
+- [Environment Variables](#-environment-variables)
+- [Database Setup](#️-database-setup)
+- [Running the App](#️-run-application)
+- [Project Structure](#-project-structure)
+- [How to Use](#-how-to-use)
+- [AI Architecture](#-ai-architecture)
+- [Security](#-security-features)
+- [Error Handling](#-error-handling)
+- [Testing](#-testing)
+- [Deployment](#-deployment)
+- [Troubleshooting / FAQ](#-troubleshooting--faq)
+- [Roadmap](#-roadmap)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Author](#-author)
 
 ---
 
@@ -14,28 +40,27 @@ An AI-powered resume evaluation platform that analyzes resumes, identifies skill
 
 ### 🤖 AI Resume Analysis
 - Uses **Groq LLaMA 3.3 70B** for intelligent resume evaluation
-- Compares resume skills with target job requirements
-- Generates structured AI-based feedback
+- Compares resume skills against target job requirements
+- Generates structured, AI-based feedback
 
 ### 🧠 Skill Intelligence
 - Automatically extracts technical skills
 - Detects missing skills for desired roles
-- Provides improvement recommendations
+- Provides actionable improvement recommendations
 
 ### 🗺️ Personalized Learning Roadmap
-- Generates step-by-step learning paths
+- Generates a step-by-step learning path
 - Prioritizes skills based on career goals
 - Helps users prepare for industry requirements
 
 ### 🎯 Interview Preparation
 - Generates role-specific interview questions
-- Covers technical and behavioral preparation
+- Covers both technical and behavioral preparation
 
 ### 📄 Resume Upload Support
-- Supports:
-  - PDF resumes
-  - DOCX resumes
-  - Direct text input
+- PDF resumes
+- DOCX resumes
+- Direct text input
 
 ### 🔐 User Management
 - User registration and login
@@ -44,150 +69,137 @@ An AI-powered resume evaluation platform that analyzes resumes, identifies skill
 
 ### 📱 Modern UI
 - Responsive dashboard
-- Clean user interface
+- Clean, minimal interface
 - Mobile-friendly design
 
 ---
 
-# 🛠️ Tech Stack
+## 🛠️ Tech Stack
 
-## Backend
-- Python
-- Flask
-- SQLAlchemy
-- PyMySQL
-
-## Database
-- MySQL
-
-## Artificial Intelligence
-- Groq API
-- LLaMA 3.3 70B Model
-
-## Frontend
-- HTML5
-- CSS3
-- Jinja2 Templates
-
-## Document Processing
-- PyPDF2
-- python-docx
+| Layer | Technologies |
+|---|---|
+| **Backend** | Python, Flask, SQLAlchemy, PyMySQL |
+| **Database** | MySQL |
+| **AI** | Groq API, LLaMA 3.3 70B Versatile |
+| **Frontend** | HTML5, CSS3, Jinja2 Templates |
+| **Document Processing** | PyPDF2, python-docx |
 
 ---
 
-# 📋 Prerequisites
+## 🎬 Demo / Screenshots
+
+> Add screenshots or a short GIF/video walkthrough of the dashboard, resume upload, and analysis results here so visitors can see the tool in action without installing it.
+
+```
+docs/screenshots/dashboard.png
+docs/screenshots/analysis-result.png
+```
+
+---
+
+## 📋 Prerequisites
 
 Before running the project, install:
 
 - Python 3.8+
-- MySQL Database
+- MySQL Database (running instance, local or hosted)
 - Git
-- Groq API Key
-
-Get your Groq API key:
-
-https://console.groq.com/keys
+- A Groq API key → [console.groq.com/keys](https://console.groq.com/keys)
 
 ---
 
-# ⚙️ Installation Guide
+## ⚙️ Installation Guide
 
-## 1. Clone Repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/kunal-yelgate/ResumeAI_Evaluator.git
-
 cd ResumeAI_Evaluator
 ```
 
----
+### 2. Create a Virtual Environment
 
-## 2. Create Virtual Environment
-
-### Windows
-
+**Windows**
 ```bash
 python -m venv venv
-
 venv\Scripts\activate
 ```
 
-### Linux / macOS
-
+**Linux / macOS**
 ```bash
 python3 -m venv venv
-
 source venv/bin/activate
 ```
 
----
-
-## 3. Install Dependencies
+### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
-
-## 4. Configure Environment Variables
-
-Create a `.env` file:
+### 4. Configure Environment Variables
 
 ```bash
 cp .env.example .env
 ```
 
-Update the values:
-
-```env
-DATABASE_URL=mysql+pymysql://username:password@host:port/database_name
-
-FLASK_SECRET_KEY=your_secret_key
-
-GROQ_API_KEY=your_groq_api_key
-```
+See [Environment Variables](#-environment-variables) below for what to fill in.
 
 ---
 
-# 🗄️ Database Setup
+## 🔑 Environment Variables
 
-Initialize database tables:
+| Variable | Description | Example |
+|---|---|---|
+| `DATABASE_URL` | MySQL connection string | `mysql+pymysql://user:pass@localhost:3306/resumeai` |
+| `FLASK_SECRET_KEY` | Secret key for Flask sessions | a long random string |
+| `GROQ_API_KEY` | API key for Groq LLaMA access | from console.groq.com/keys |
+
+> ⚠️ Never commit your `.env` file. Keep secrets out of version control — `.env` should already be listed in `.gitignore`.
+
+---
+
+## 🗄️ Database Setup
+
+Initialize the database tables:
 
 ```bash
 python -c "from db import Base, engine; Base.metadata.create_all(bind=engine)"
 ```
 
+Make sure the MySQL database referenced in `DATABASE_URL` already exists before running this command.
+
 ---
 
-# ▶️ Run Application
+## ▶️ Run Application
 
-Start Flask server:
+Start the Flask development server:
 
 ```bash
 python app.py
 ```
 
-Open:
+Then open:
 
 ```
 http://localhost:5000
 ```
 
+> For production, run behind a WSGI server such as Gunicorn or uWSGI rather than the Flask development server — see [Deployment](#-deployment).
+
 ---
 
-# 📁 Project Structure
+## 📁 Project Structure
 
 ```
 ResumeAI_Evaluator/
-
 │
 ├── app.py                 # Main Flask application
 ├── ai.py                  # Groq AI integration
 ├── db.py                  # Database configuration
 ├── models.py              # SQLAlchemy database models
 ├── requirements.txt       # Python dependencies
-├── .env.example           # Environment template
+├── .env.example            # Environment template
 │
 ├── static/
 │   └── style.css          # CSS styling
@@ -205,48 +217,27 @@ ResumeAI_Evaluator/
 
 ---
 
-# 🎯 How To Use
+## 🎯 How to Use
 
-### Step 1 — Create Account
-Register using your email and password.
-
-### Step 2 — Login
-Access your personal dashboard.
-
-### Step 3 — Upload Resume
-
-Choose one:
-
-- Upload PDF/DOCX file
-- Paste resume text manually
-
-### Step 4 — Select Career Goal
-
-Example:
-
-```
-Senior Python Developer
-Machine Learning Engineer
-Full Stack Developer
-Data Scientist
-```
-
-### Step 5 — Receive AI Analysis
-
-The system provides:
-
-✅ Current Skills  
-❌ Missing Skills  
-🗺️ Learning Roadmap  
-❓ Interview Questions  
+1. **Create an account** — register with your email and password.
+2. **Log in** — access your personal dashboard.
+3. **Upload a resume** — choose PDF, DOCX, or paste text directly.
+4. **Select a career goal**, e.g.:
+   - Senior Python Developer
+   - Machine Learning Engineer
+   - Full Stack Developer
+   - Data Scientist
+5. **Receive AI analysis**, including:
+   - ✅ Current skills
+   - ❌ Missing skills
+   - 🗺️ Learning roadmap
+   - ❓ Interview questions
 
 ---
 
-# 🧠 AI Architecture
+## 🧠 AI Architecture
 
-ResumeAI uses Groq's **LLaMA 3.3 70B Versatile model**.
-
-The AI analyzes:
+ResumeAI uses Groq's **LLaMA 3.3 70B Versatile** model to analyze:
 
 - Technical skills
 - Experience level
@@ -255,38 +246,71 @@ The AI analyzes:
 - Learning priorities
 - Interview readiness
 
-The output is generated in structured JSON format for reliable processing.
+Output is generated in structured JSON for reliable, predictable downstream processing.
 
 ---
 
-# 🔐 Security Features
-
-Implemented security measures:
+## 🔐 Security Features
 
 - Password hashing
-- Session authentication
-- Secure database connection
-- File upload validation
-- Environment-based secrets
-- Error handling middleware
+- Session-based authentication
+- Secure database connections
+- File upload validation (type/size checks)
+- Environment-based secrets management
+- Centralized error handling middleware
 
 ---
 
-# 🐛 Error Handling
+## 🐛 Error Handling
 
-The application includes:
-
-- API failure handling
-- Rate-limit handling
-- Resume parsing fallback
-- Custom error pages
-- User-friendly messages
+- Graceful API failure handling
+- Rate-limit handling for the Groq API
+- Resume parsing fallback for malformed files
+- Custom `404` / `500` error pages
+- User-friendly error messages throughout the UI
 
 ---
 
-# 🚀 Future Improvements
+## ✅ Testing
 
-Planned features:
+> Add details on how to run the test suite once tests are in place, e.g.:
+
+```bash
+pytest
+```
+
+Consider adding coverage for:
+- Resume parsing (PDF/DOCX edge cases)
+- AI response parsing/fallback logic
+- Auth flows (signup, login, password reset)
+
+---
+
+## 📦 Deployment
+
+Notes for deploying beyond local development:
+
+- Run the app with a production WSGI server (e.g. `gunicorn app:app`)
+- Set `FLASK_ENV=production` and disable debug mode
+- Use a managed MySQL instance and store credentials as environment secrets, not in code
+- Put the app behind a reverse proxy (e.g. Nginx) with HTTPS enabled
+
+---
+
+## ❓ Troubleshooting / FAQ
+
+**The app can't connect to MySQL.**
+Double-check `DATABASE_URL` in `.env` and confirm the database exists and the MySQL server is running.
+
+**Groq API calls are failing.**
+Verify `GROQ_API_KEY` is set correctly and that your Groq account has available quota.
+
+**Resume upload fails.**
+Confirm the file is a valid PDF or DOCX and under the configured size limit.
+
+---
+
+## 🚀 Roadmap
 
 - [ ] ATS Resume Score
 - [ ] GitHub Profile Analysis
@@ -298,50 +322,40 @@ Planned features:
 
 ---
 
-# 🤝 Contributing
+## 🤝 Contributing
 
 Contributions are welcome!
 
-Steps:
-
 1. Fork the repository
-
 2. Create a branch:
+   ```bash
+   git checkout -b feature/new-feature
+   ```
+3. Commit your changes:
+   ```bash
+   git commit -m "Add new feature"
+   ```
+4. Push the branch:
+   ```bash
+   git push origin feature/new-feature
+   ```
+5. Open a Pull Request
 
-```bash
-git checkout -b feature/new-feature
-```
-
-3. Commit changes:
-
-```bash
-git commit -m "Add new feature"
-```
-
-4. Push:
-
-```bash
-git push origin feature/new-feature
-```
-
-5. Create a Pull Request
+Please open an issue first for major changes so we can discuss what you'd like to do.
 
 ---
 
-# 📜 License
+## 📜 License
 
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-# 👨‍💻 Author
+## 👨‍💻 Author
 
 **Kunal Yelgate**
-
-GitHub:
-
-https://github.com/kunal-yelgate
+GitHub: [github.com/kunal-yelgate](https://github.com/kunal-yelgate)
 
 ---
 
-⭐ If you like this project, consider giving it a star on GitHub!
+⭐ If you find this project useful, consider giving it a star on GitHub!
